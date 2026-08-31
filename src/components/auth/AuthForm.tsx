@@ -2,11 +2,7 @@ import { useState } from "react";
 import PhoneNumberForm from "./PhoneNumberForm";
 import VerificationCodeForm from "./VerificationCodeForm";
 
-interface AuthFormProps {
-    onTokenReceive: (token: string) => void;
-}
-
-function AuthForm({ onTokenReceive }: AuthFormProps) {
+function AuthForm() {
     const [phone, setPhone] = useState('');
     const [isPhoneValid, setIsPhoneValid] = useState(false);
     const [showCodeForm, setShowCodeForm] = useState(false);
@@ -36,7 +32,7 @@ function AuthForm({ onTokenReceive }: AuthFormProps) {
                     {!showCodeForm ? (
                         <PhoneNumberForm value={phone} setIsValid={setIsPhoneValid} onChange={setPhone} />
                     ) : (
-                        <VerificationCodeForm phone={phone} onJWTReceive={onTokenReceive} />
+                        <VerificationCodeForm phone={phone} />
                     )}
 
                 </div>

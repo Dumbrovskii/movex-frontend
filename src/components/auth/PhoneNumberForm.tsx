@@ -1,8 +1,8 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { PhoneInput } from 'react-international-phone';
 import 'react-international-phone/style.css';
-import { API_OPTIONS_POST, ROUTES } from '../../constants/api';
+import {sessionService} from "../../application/session/session.service.ts";
 
 interface PhoneNumberFormProps {
     value: string;
@@ -15,11 +15,8 @@ function PhoneNumberForm({ value, setIsValid, onChange }: PhoneNumberFormProps) 
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string, isError: boolean } | null>(null);
 
-    const isValid = useMemo(() => {
-        if (!phone) return false;
-        const phoneNumber = parsePhoneNumberFromString(phone);
-        return phoneNumber ? phoneNumber.isValid() : false;
-    }, [phone]);
+    const phoneNumber = parsePhoneNumberFromString(phone)
+    const isValid = phoneNumber?.isValid() ?? false
 
     useEffect(() => {
         setIsValid(isValid);
@@ -33,15 +30,7 @@ function PhoneNumberForm({ value, setIsValid, onChange }: PhoneNumberFormProps) 
         setMessage(null);
 
         try {
-            const response = await fetch(ROUTES.REQUEST_CODE, {
-                ...API_OPTIONS_POST,
-                body: JSON.stringify({ phone })
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to send Code");
-            }
-
+            await sessionService.requestCode(phone)
             setMessage({ text: "Code sent successfully!", isError: false });
         } catch (error) {
             setMessage({
